@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentFlow · Recordatorios</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/llamados-completos.css">
+
+  <style>
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .filtros label {
+      display: grid;
+      gap: 6px;
+    }
+
+    .tabla-contenedor {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #dce3ee;
+    }
+
+    th {
+      background: #eaf0f8;
+    }
+
+    td {
+      overflow-wrap: anywhere;
+    }
+
+    .paginacion {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+  </style>
+
+  <script type="module" src="../js/llamadosCompletos/listarRecordatorios.js"></script>
+  <script type="module" src="../js/llamadosCompletos/crearRecordatorio.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">StudentFlow / Recordatorios</p>
+      <h1>Listado de recordatorios</h1>
+      <p>Consulta y filtra los recordatorios registrados en el sistema.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="titulo-crear-recordatorio">
+      <h2 id="titulo-crear-recordatorio">Crear recordatorio</h2>
+
+      <form id="form-crear-recordatorio" class="filtros">
+        <label>
+          Tarea
+          <select name="tareaId" id="tarea-recordatorio" required>
+            <option value="">Cargando tareas...</option>
+          </select>
+        </label>
+
+        <label>
+          Mensaje
+          <input type="text" name="mensaje" maxlength="255" placeholder="Ej. Recuerda entregar el trabajo" required>
+        </label>
+
+        <label>
+          Fecha y hora
+          <input type="datetime-local" name="fechaHora" required>
+        </label>
+
+        <label>
+          Canal
+          <select name="canal" required>
+            <option value="in_app">En la aplicación</option>
+            <option value="email">Correo electrónico</option>
+          </select>
+        </label>
+
+        <button type="submit" id="guardar-recordatorio">
+          Crear recordatorio
+        </button>
+      </form>
+
+      <p id="estado-crear-recordatorio" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel" id="panel-editar-recordatorio" aria-labelledby="titulo-editar-recordatorio" hidden>
+      <h2 id="titulo-editar-recordatorio">Editar recordatorio</h2>
+
+      <form id="form-editar-recordatorio" class="filtros">
+        <input type="hidden" name="id">
+
+        <label>
+          Tarea
+          <select name="tareaId" id="editar-tarea-recordatorio" required>
+            <option value="">Selecciona una tarea</option>
+          </select>
+        </label>
+
+        <label>
+          Mensaje
+          <input type="text" name="mensaje" maxlength="255" required>
+        </label>
+
+        <label>
+          Fecha y hora
+          <input type="datetime-local" name="fechaHora" required>
+        </label>
+
+        <label>
+          Canal
+          <select name="canal" required>
+            <option value="in_app">En la aplicación</option>
+            <option value="email">Correo electrónico</option>
+          </select>
+        </label>
+
+        <button type="submit" id="guardar-cambios-recordatorio">
+          Guardar cambios
+        </button>
+
+        <button type="button" id="cancelar-edicion-recordatorio">
+          Cancelar
+        </button>
+      </form>
+
+      <p id="estado-editar-recordatorio" role="status" aria-live="polite"></p>
+    </section>
+
+
+    <section class="panel" aria-labelledby="titulo-listado">
+      <h2 id="titulo-listado">Recordatorios</h2>
+
+      <form id="filtros-recordatorios" class="filtros">
+        <label>
+          Buscar
+          <input type="search" name="search" placeholder="Buscar en recordatorios">
+        </label>
+
+        <label>
+          Canal
+          <select name="canal">
+            <option value="">Todos</option>
+            <option value="in_app">En la aplicación</option>
+            <option value="email">Correo electrónico</option>
+          </select>
+        </label>
+
+        <label>
+          Estado
+          <select name="leido">
+            <option value="">Todos</option>
+            <option value="false">Pendientes</option>
+            <option value="true">Leídos</option>
+          </select>
+        </label>
+
+        <button type="submit">Aplicar filtros</button>
+      </form>
+
+      <button id="recargar-recordatorios" type="button">
+        Recargar
+      </button>
+
+      <p id="estado" role="status" aria-live="polite">
+        Preparando consulta…
+      </p>
+
+      <p id="paginacion" class="muted"></p>
+
+      <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla de recordatorios">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Mensaje</th>
+              <th>Tarea</th>
+              <th>Materia</th>
+              <th>Fecha y hora</th>
+              <th>Canal</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="recordatorios-body"></tbody>
+        </table>
+      </div>
+
+      <div class="paginacion">
+        <button id="pagina-anterior" type="button" disabled>
+          Anterior
+        </button>
+        <button id="pagina-siguiente" type="button" disabled>
+          Siguiente
+        </button>
+      </div>
+    </section>
+  </main>
+</body>
+
+</html>
